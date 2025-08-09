@@ -15,7 +15,7 @@ export default function SignalsPage() {
 	if (isLoading)
 		return (
 			<div className="w-full max-w-2xl mx-auto animate-fade-in">
-				<div className="bg-card border border-border rounded-xl shadow-card p-6">
+				<div className="bg-card border border-border rounded-xl shadow-card p-6 rainbow-border">
 					<div className="h-6 w-40 bg-muted rounded animate-pulse mb-4" />
 					<div className="space-y-2">
 						<div className="h-10 bg-muted rounded animate-pulse" />
@@ -28,7 +28,7 @@ export default function SignalsPage() {
 	if (error)
 		return (
 			<div className="w-full max-w-2xl mx-auto animate-fade-in">
-				<div className="bg-card border border-border rounded-xl shadow-card p-6 text-red-300">
+				<div className="bg-card border border-border rounded-xl shadow-card p-6 text-red-300 rainbow-border rainbow-rotate">
 					{String(error)}
 				</div>
 			</div>
@@ -36,9 +36,14 @@ export default function SignalsPage() {
 
 	return (
 		<div className="w-full max-w-2xl mx-auto animate-fade-in">
-			<div className="bg-card border border-border rounded-xl shadow-card p-4 sm:p-6">
+			<div className="bg-card border border-border rounded-xl shadow-card p-4 sm:p-6 rainbow-border rainbow-rotate">
 				<div className="flex items-center justify-between mb-4">
-					<h1 className="text-xl font-semibold">Signals</h1>
+					<h1
+						className="text-xl font-semibold text-shimmer"
+						id="signals-heading"
+					>
+						Signals
+					</h1>
 					<button
 						onClick={() => setOpenAdd((v) => !v)}
 						className="inline-flex items-center gap-2 px-3 py-2 rounded bg-accent/10 hover:bg-accent/20 text-accent transition"
@@ -65,6 +70,7 @@ export default function SignalsPage() {
 							onChange={(e) => setNewName(e.target.value)}
 							placeholder="New signal name"
 							className="bg-muted border border-border/70 rounded px-3 py-2 w-full"
+							aria-label="New signal name"
 						/>
 						<button
 							onClick={() => {
@@ -100,7 +106,7 @@ export default function SignalsPage() {
 							>
 								<Link
 									href={`/signals/${encodeURIComponent(s.name)}`}
-									className="px-2 py-1 rounded hover:bg-muted/60 transition-colors"
+									className="px-2 py-1 rounded hover:bg-muted/60 hover:translate-x-0.5 transition-all"
 								>
 									{s.name}
 								</Link>
@@ -122,7 +128,7 @@ export default function SignalsPage() {
 										</button>
 										<button
 											onClick={() => setConfirmName(null)}
-											className="inline-flex items-center gap-1 text-subtext hover:text-text"
+											className="inline-flex items-center gap-1 text-subtext hover:text-text hover:scale-[1.02]"
 										>
 											<X className="w-4 h-4" />
 											<span>Cancel</span>
@@ -131,7 +137,7 @@ export default function SignalsPage() {
 								) : (
 									<button
 										onClick={() => setConfirmName(s.name)}
-										className="inline-flex items-center gap-1 text-subtext hover:text-red-400 transition-colors"
+										className="inline-flex items-center gap-1 text-subtext hover:text-red-400 transition-colors hover:scale-[1.02]"
 									>
 										<Trash2 className="w-4 h-4" />
 										<span>Delete</span>

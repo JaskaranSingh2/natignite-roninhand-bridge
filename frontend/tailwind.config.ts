@@ -5,13 +5,13 @@ const config: Config = {
 	theme: {
 		extend: {
 			colors: {
-				background: "#0b0f1a",
-				card: "#0f1729",
-				muted: "#1a2236",
-				border: "#232b3e",
-				accent: "#7c9eff",
-				text: "#e5e9f2",
-				subtext: "#9aa6bf",
+				background: "var(--bg)",
+				card: "var(--card)",
+				muted: "var(--muted)",
+				border: "var(--border)",
+				accent: "var(--accent)",
+				text: "var(--text)",
+				subtext: "var(--subtext)",
 			},
 			boxShadow: {
 				card: "0 4px 20px rgba(0,0,0,0.3)",
