@@ -162,7 +162,7 @@ class GestureHandler(http.server.SimpleHTTPRequestHandler):
 
 def signal_handler(sig, frame, httpd=None):
     print('Received Ctrl+C, shutting down...')
-    cleanup(httpd)
+    httpd.server_close()
 
 class CustomThreadingTCPServer(socketserver.ThreadingTCPServer):
     allow_reuse_address = True
