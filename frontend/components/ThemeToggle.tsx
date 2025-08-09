@@ -9,11 +9,8 @@ export function ThemeToggle() {
 	useEffect(() => {
 		const stored =
 			(localStorage.getItem("theme") as "light" | "dark" | null) || null;
-		const initial =
-			stored ||
-			(window.matchMedia("(prefers-color-scheme: light)").matches
-				? "light"
-				: "dark");
+		// Default to dark if no stored preference
+		const initial = stored || "dark";
 		setTheme(initial);
 		document.documentElement.setAttribute("data-theme", initial);
 	}, []);

@@ -4,6 +4,11 @@
 
 :root {
 	color-scheme: dark;
+	--color-1: 0 100% 63%;
+	--color-2: 270 100% 63%;
+	--color-3: 210 100% 63%;
+	--color-4: 195 100% 63%;
+	--color-5: 90 100% 63%;
 }
 
 /* Light theme */
@@ -58,83 +63,70 @@ body {
 .text-shimmer {
 	background: linear-gradient(
 		90deg,
-		rgba(255, 255, 255, 0.15) 0%,
-		rgba(255, 255, 255, 0.5) 50%,
-		rgba(255, 255, 255, 0.15) 100%
+		currentColor 0%,
+		rgba(255, 255, 255, 0.6) 50%,
+		currentColor 100%
 	);
 	background-size: 200% 100%;
 	-webkit-background-clip: text;
 	background-clip: text;
 	color: transparent;
-	animation: shimmer 2s linear infinite;
+	animation: shimmer 1.5s linear infinite;
 }
+
+[data-theme="light"] .text-shimmer {
+	background: linear-gradient(
+		90deg,
+		#0a0a0a 0%,
+		rgba(37, 99, 235, 0.7) 50%,
+		#0a0a0a 100%
+	);
+	background-size: 200% 100%;
+	-webkit-background-clip: text;
+	background-clip: text;
+	color: transparent;
+}
+
 @keyframes shimmer {
 	0% {
 		background-position: 200% 0;
 	}
 	100% {
-		background-position: 0 0;
+		background-position: -200% 0;
 	}
 }
 
-/* Rainbow border (subtle glow) */
+/* Rainbow border */
 .rainbow-border {
 	position: relative;
-}
-.rainbow-border::before {
-	content: "";
-	position: absolute;
-	inset: -1px;
-	border-radius: inherit;
-	padding: 1px;
-	background: conic-gradient(
-		from 0deg,
-		#ff0080,
-		#ff8c00,
-		#ffff00,
-		#00ff00,
-		#00ffff,
-		#0080ff,
-		#8000ff,
-		#ff0080
+	background: linear-gradient(
+		90deg,
+		#ff0080 0%,
+		#ff8c00 14%,
+		#ffff00 28%,
+		#00ff00 42%,
+		#00ffff 57%,
+		#0080ff 71%,
+		#8000ff 85%,
+		#ff0080 100%
 	);
+	background-size: 400% 400%;
+	animation: rainbowSlide 3s ease infinite;
+	border-radius: 12px;
+	padding: 2px;
+}
 
-	/* Animated rainbow border */
-	.rainbow-rotate {
-		position: relative;
-	}
-	.rainbow-rotate::before {
-		content: "";
-		position: absolute;
-		inset: -1px;
-		border-radius: inherit;
-		padding: 1px;
-		background: conic-gradient(
-			from 0deg,
-			#ff0080,
-			#ff8c00,
-			#ffff00,
-			#00ff00,
-			#00ffff,
-			#0080ff,
-			#8000ff,
-			#ff0080
-		);
-		animation: spin 6s linear infinite;
-		-webkit-mask: linear-gradient(#000 0 0) content-box,
-			linear-gradient(#000 0 0);
-		-webkit-mask-composite: xor;
-		mask-composite: exclude;
-		pointer-events: none;
-	}
-	@keyframes spin {
-		to {
-			transform: rotate(360deg);
-		}
-	}
+.rainbow-border > * {
+	background: var(--card);
+	border-radius: 10px;
+}
 
-	-webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
-	-webkit-mask-composite: xor;
-	mask-composite: exclude;
-	pointer-events: none;
+@keyframes rainbowSlide {
+	0%,
+	100% {
+		background-position: 0% 50%;
+	}
+	50% {
+		background-position: 100% 50%;
+	}
 }
