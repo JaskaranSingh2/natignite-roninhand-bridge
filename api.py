@@ -141,34 +141,24 @@ class GestureHandler(http.server.SimpleHTTPRequestHandler):
             self.send_header('Pragma', 'no-cache')
             self.send_header('Expires', '0')
             self.end_headers()
+        if self.path == '/receive_signals':
+            signal = data['signal']
+            value=data["value"]
+            with open("signals.json", "r") as file:
+                data = json.load(file)
+            matches = [s for s in data.keys if fnmatch.fnmatch(s, signal)]
+            for i in matches:
+                data[i]=mapsto
+            with open("mapping.json", "w") as file:
+                json.dump(data, file, indent=4)
+            end_time=time.time()
+            print(f"Update request handled in {end_time-start_time:.2f} ms")
+            self.send_response(200)
+            self.send_header('Cache-Control', 'no-cache, no-store, must-revalidate')
+            self.send_header('Pragma', 'no-cache')
+            self.send_header('Expires', '0')
+            self.end_headers()
 
-
-def cleanup(httpd=None):
-    global server_shutdown
-    server_shutdown = True
-    print("Cleaning up resources...")
-    try:
-        if portHandler and portHandler.is_open:
-            for servo_id in [int(sid.split('_')[1]) for sid in servo_limits.keys()]:
-                try:
-                    portHandler.setPacketTimeout(SERVO_TIMEOUT * 1000)
-                    scs_comm_result, scs_error = packetHandler.write1ByteTxRx(portHandler, servo_id, ADDR_SCS_TORQUE_ENABLE, 0)
-                    if scs_comm_result != COMM_SUCCESS:
-                        print(f"Error disabling torque for servo {servo_id}: {packetHandler.getTxRxResult(scs_comm_result)}")
-                    if scs_error != 0:
-                        print(f"Error disabling torque for servo {servo_id}: {packetHandler.getRxPacketError(scs_error)}")
-                except Exception as e:
-                    print(f"Error disabling torque for servo {servo_id}: {e}")
-            portHandler.closePort()
-            print("Port closed successfully")
-        if httpd:
-            httpd.server_close()
-            print("Server socket closed")
-    except Exception as e:
-        print(f"Error during cleanup: {e}")
-    finally:
-        print("Cleanup complete, exiting.")
-        sys.exit(0)
 
 def signal_handler(sig, frame, httpd=None):
     print('Received Ctrl+C, shutting down...')
@@ -193,10 +183,10 @@ try:
             httpd.serve_forever()
         except KeyboardInterrupt:
             print("Keyboard interrupt received, shutting down server...")
-            cleanup(httpd)
+            httpd.server_close()
         except Exception as e:
             print(f"Server error: {e}")
-            cleanup(httpd)
+            httpd.server_close()
 except Exception as e:
     print(f"Failed to start server: {e}")
-    cleanup()
+    httpd.server_close()
