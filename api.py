@@ -8,52 +8,40 @@ import fnmatch
 import copy
 import ast
 import requests
-
+import numpy as np
 signal_received={}
 signal_received_time={}
 old_signal_received_time={}
 servos=1
+past_tasks="xaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
 SERVER_URL = "http://localhost:8000"
 def change_servos_position(servos,adjustment):
     current_positions = requests.get(f"{SERVER_URL}/current_positions", timeout=1).json() 
-    print(current_positions)
+    #print(current_positions)
     current_positions[f"servo_{servos}"]+=adjustment
     response=requests.post(f"{SERVER_URL}/update", json={"positions": current_positions},timeout=1)
-    print(f"The response to updating the postion was {response}") 
+    #print(f"The response to updating the postion was {response}") 
 
 def convert_signal_to_action(signal_received):
     print(f"The signal received was {signal_received}")
     lst = list(signal_received.values())
     with open("mapping.json", "r") as file:
-        data = json.load(file)
+        data = json.load(file)  
     tasks=data[str(lst)]
-
-    global servos
+    if type(tasks)!=list:
+        return
+    global past_tasks
     for task in tasks:
-        if task[:9]=="timesleep":
-            time.sleep(int(task[9:])*1000)
-        elif task[:16]=="increment_servos":
-            servos+=1
-            if servos>12:
-                servos=1
-        elif task[:16]=="decrement_servos":
-            servos-=1
-            if servos<1:
-                servos=12
-        elif task[:13]=="select_servos":
-            servos=int(task[13:])
-        elif task[:21]=="increase_servos_angle":
-            adjustment=int(task[21:])
-            change_servos_position(servos,adjustment)
-        elif task[:21]=="decrease_servos_angle":
-            adjustment=int(task[21:])
-            change_servos_position(servos,adjustment)
-        else:
+        if task.lower()!=past_tasks.lower():
+            
+            print(task)
             response = requests.post(f"{SERVER_URL}/execute", 
-                        json={"gesture": task, "thumb_clearance": False},
-                        timeout=1) 
+                            json={"gesture": task.lower(), "thumb_clearance": False},
+                            timeout=1) 
 
-    pass
+            #print(response)
+               
+            past_tasks=task
 
 
 def match_pattern(pattern_str, data_list_strs):
@@ -97,7 +85,7 @@ class GestureHandler(http.server.SimpleHTTPRequestHandler):
             self.end_headers()
             self.wfile.write(json.dumps({"message": "API Server Running"}).encode())
         elif self.path == '/signals': #tested works
-            print("Handling GET /signals")
+            ##print("Handling GET /signals")
             with open("signals.json", "r") as file:
                 data = json.load(file)
             self.send_response(200)
@@ -108,7 +96,7 @@ class GestureHandler(http.server.SimpleHTTPRequestHandler):
             self.end_headers()
             self.wfile.write(json.dumps(data).encode())
         elif self.path == '/mapping': #tested works
-            print("Handling GET /mapping")
+            ##print("Handling GET /mapping")
             with open("mapping.json", "r") as file:
                 data = json.load(file)
             self.send_response(200)
@@ -126,7 +114,7 @@ class GestureHandler(http.server.SimpleHTTPRequestHandler):
         content_length = int(self.headers['Content-Length'])
         post_data = self.rfile.read(content_length)
         data = json.loads(post_data)
-        print(f"Received POST request on {self.path}")
+        ##print(f"Received POST request on {self.path}")
 
         if self.path == '/add_signal': #testedworks
             signal_name = data['signal']
@@ -145,7 +133,7 @@ class GestureHandler(http.server.SimpleHTTPRequestHandler):
             with open("signals.json", "w") as file:
                 json.dump(data, file, indent=4)
             end_time=time.time()
-            print(f"Update request handled in {end_time-start_time:.2f} ms")
+            #print(f"Update request handled in {end_time-start_time:.2f} ms")
             self.send_response(200)
             self.send_header('Cache-Control', 'no-cache, no-store, must-revalidate')
             self.send_header('Pragma', 'no-cache')
@@ -167,7 +155,7 @@ class GestureHandler(http.server.SimpleHTTPRequestHandler):
             with open("signals.json", "w") as file:
                 json.dump(data, file, indent=4)
             end_time=time.time()
-            print(f"Update request handled in {end_time-start_time:.2f} ms")
+            #print(f"Update request handled in {end_time-start_time:.2f} ms")
             self.send_response(200)
             self.send_header('Cache-Control', 'no-cache, no-store, must-revalidate')
             self.send_header('Pragma', 'no-cache')
@@ -184,7 +172,7 @@ class GestureHandler(http.server.SimpleHTTPRequestHandler):
             with open("mapping.json", "w") as file:
                 json.dump(data, file, indent=4)
             end_time=time.time()
-            print(f"Update request handled in {end_time-start_time:.2f} ms")
+            #print(f"Update request handled in {end_time-start_time:.2f} ms")
             self.send_response(200)
             self.send_header('Cache-Control', 'no-cache, no-store, must-revalidate')
             self.send_header('Pragma', 'no-cache')
@@ -193,6 +181,7 @@ class GestureHandler(http.server.SimpleHTTPRequestHandler):
         elif self.path == '/receive_signals':
             signal = data['signal']
             value=data["value"]
+            #print(signal, value)
             global signal_received,old_signal_received_time,signal_received_time
             if not signal_received:
                 with open("signals.json", "r") as file:
@@ -216,7 +205,7 @@ class GestureHandler(http.server.SimpleHTTPRequestHandler):
                 convert_signal_to_action(signal_received)
                 old_signal_received_time=copy.deepcopy(signal_received_time)
             end_time=time.time()
-            print(f"Update request handled in {end_time-start_time:.2f} ms")
+            ##print(f"Update request handled in {end_time-start_time:.2f} ms")
             self.send_response(200)
             self.send_header('Cache-Control', 'no-cache, no-store, must-revalidate')
             self.send_header('Pragma', 'no-cache')
@@ -230,9 +219,9 @@ import socketserver
 PORT = 7001  # Or any port you want
 
 with socketserver.TCPServer(("", PORT), GestureHandler) as httpd:
-    print(f"Server running at http://localhost:{PORT}")
+    #print(f"Server running at http://localhost:{PORT}")
     try:
         httpd.serve_forever()
     except KeyboardInterrupt:
-        print("\nReceived Ctrl+C, shutting down")
+        #print("\nReceived Ctrl+C, shutting down")
         httpd.shutdown()

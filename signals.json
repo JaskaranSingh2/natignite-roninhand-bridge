@@ -1,10 +1,31 @@
 {
-    "Test1": [
-        "Clenched",
-        "opened"
+    "finger1": [
+        "1flexed",
+        "1notflexed"
     ],
-    "Test2": [
-        "Up",
-        "Down"
+    "finger2": [
+        "2flexed",
+        "2notflexed"
+    ],
+    "finger3": [
+        "3flexed",
+        "3notflexed"
+    ],
+    "finger4": [
+        "4flexed",
+        "4notflexed"
+    ],
+    "finger5": [
+        "5flexed",
+        "5notflexed"
+    ],
+    "bicep": [
+        "true",
+        "false"
+    ],
+    "mode": [
+        "0",
+        "1",
+        "2"
     ]
 }
