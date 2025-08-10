@@ -1,6 +1,6 @@
 {
-    "['Clenched', 'Up']": null,
-    "['Clenched', 'Down']": null,
-    "['opened', 'Up']": null,
-    "['opened', 'Down']": null
+    "['Clenched', 'Up', 'BBB']": null,
+    "['Clenched', 'Down', 'BBB']": null,
+    "['opened', 'Up', 'BBB']": null,
+    "['opened', 'Down', 'BBB']": null
 }
