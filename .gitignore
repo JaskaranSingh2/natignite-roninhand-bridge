@@ -1,478 +1,49 @@
-# =============================================================================
-# NatIgnite RoninHand Bridge - Comprehensive .gitignore
-# =============================================================================
-
-# -----------------------------------------------------------------------------
-# Node.js / Next.js / Frontend
-# -----------------------------------------------------------------------------
+# Node / Next.js
 node_modules/
 .next/
 out/
-.nuxt/
-dist/
-build/
 .next-static/
-.cache/
-.parcel-cache/
-
-# Logs
 *.log
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
-lerna-debug.log*
-
-# Runtime data
-pids
-*.pid
-*.seed
-*.pid.lock
-
-# Coverage directory used by tools like istanbul
-coverage/
-*.lcov
-
-# nyc test coverage
-.nyc_output
-
-# ESLint cache
-.eslintcache
-
-# Next.js build cache
 .next/cache/
 
-# Gatsby files
-.cache/
-public
-
-# Vuepress build output
-.vuepress/dist
-
-# Serverless directories
-.serverless/
-
-# FuseBox cache
-.fusebox/
-
-# DynamoDB Local files
-.dynamodb/
-
-# TernJS port file
-.tern-port
-
-# Stores VSCode versions used for testing VSCode extensions
-.vscode-test
-
-# yarn v2
-.yarn/cache
-.yarn/unplugged
-.yarn/build-state.yml
-.yarn/install-state.gz
-.pnp.*
-
-# Package managers
-package-lock.json
-yarn.lock
-pnpm-lock.yaml
-bun.lockb
-
-# -----------------------------------------------------------------------------
-# Environment Variables
-# -----------------------------------------------------------------------------
-.env
+# Environment
 .env.local
 .env.development.local
 .env.test.local
 .env.production.local
-.env.development
-.env.production
-.env.staging
-*.env
+.env*
 
-# -----------------------------------------------------------------------------
-# Python / FastAPI / Backend
-# -----------------------------------------------------------------------------
-__pycache__/
-*.py[cod]
-*$py.class
-*.so
-.Python
-develop-eggs/
-downloads/
-eggs/
-.eggs/
-lib/
-lib64/
-parts/
-sdist/
-var/
-wheels/
-share/python-wheels/
-*.egg-info/
-.installed.cfg
-*.egg
-MANIFEST
-
-# PyInstaller
-*.manifest
-*.spec
-
-# Installer logs
-pip-log.txt
-pip-delete-this-directory.txt
-
-# Unit test / coverage reports
-htmlcov/
-.tox/
-.nox/
-.coverage
-.coverage.*
-.cache
-nosetests.xml
-coverage.xml
-*.cover
-*.py,cover
-.hypothesis/
-.pytest_cache/
-cover/
-
-# Translations
-*.mo
-*.pot
-
-# Django stuff:
-local_settings.py
-db.sqlite3
-db.sqlite3-journal
-
-# Flask stuff:
-instance/
-.webassets-cache
-
-# Scrapy stuff:
-.scrapy
-
-# Sphinx documentation
-docs/_build/
-
-# PyBuilder
-.pybuilder/
-target/
-
-# Jupyter Notebook
-.ipynb_checkpoints
-
-# IPython
-profile_default/
-ipython_config.py
-
-# pyenv
-.python-version
-
-# pipenv
-Pipfile.lock
-
-# poetry
-poetry.lock
-
-# pdm
-.pdm.toml
-
-# PEP 582
-__pypackages__/
-
-# Celery stuff
-celerybeat-schedule
-celerybeat.pid
-
-# SageMath parsed files
-*.sage.py
-
-# Virtual environments
-.env
-.venv
-env/
-venv/
-ENV/
-env.bak/
-venv.bak/
-gateway-env/
-
-# Spyder project settings
-.spyderproject
-.spyproject
-
-# Rope project settings
-.ropeproject
-
-# mkdocs documentation
-/site
-
-# mypy
-.mypy_cache/
-.dmypy.json
-dmypy.json
-
-# Pyre type checker
-.pyre/
-
-# pytype static type analyzer
-.pytype/
-
-# Cython debug symbols
-cython_debug/
-
-# PyCharm
-.idea/
-
-# -----------------------------------------------------------------------------
-# Operating System Files
-# -----------------------------------------------------------------------------
-# macOS
+# OS / Editor noise
 .DS_Store
-.DS_Store?
-._*
-.Spotlight-V100
-.Trashes
-ehthumbs.db
 Thumbs.db
-Icon?
-
-# Windows
-Thumbs.db
-ehthumbs.db
-Desktop.ini
-$RECYCLE.BIN/
-*.cab
-*.msi
-*.msix
-*.msm
-*.msp
-*.lnk
-
-# Linux
-*~
-.fuse_hidden*
-.directory
-.Trash-*
-.nfs*
-
-# -----------------------------------------------------------------------------
-# IDE / Editor Files
-# -----------------------------------------------------------------------------
 .vscode/
-.vscode-insiders/
 .idea/
 *.swp
-*.swo
-*~
-.project
-.classpath
-.settings/
-*.sublime-project
-*.sublime-workspace
-.history/
-.ionide/
 
-# Vim
-[._]*.s[a-v][a-z]
-[._]*.sw[a-p]
-[._]s[a-rt-v][a-z]
-[._]ss[a-gi-z]
-[._]sw[a-p]
+# Build artifacts
+coverage/
+dist/
+build/
 
-# Emacs
-*~
-\#*\#
-/.emacs.desktop
-/.emacs.desktop.lock
-*.elc
-auto-save-list
-tramp
-.\#*
+# Python / FastAPI
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.egg-info/
+.venv/
+venv/
+ENV/
+.python-version
 
-# -----------------------------------------------------------------------------
-# Build Artifacts / Temporary Files
-# -----------------------------------------------------------------------------
-*.tmp
-*.temp
-*.cache
-*.pid
-*.seed
-*.pid.lock
-*.lock
-
-# Binaries
-*.com
-*.class
-*.dll
-*.exe
-*.o
-*.so
-
-# Compressed files
-*.7z
-*.dmg
-*.gz
-*.iso
-*.jar
-*.rar
-*.tar
-*.zip
-
-# -----------------------------------------------------------------------------
-# Project-Specific Files
-# -----------------------------------------------------------------------------
-# Local data overlays (writable files that override read-only base)
+# Local data overlays
 signals.local.json
 mapping.local.json
-*.local.json
 
-# Test files
-test-output/
-test-results/
-*.test.json
-
-# Temporary robot data
-robot-positions.json
-servo-calibration.json
-
-# Hardware-specific configs
-*.device.json
-*.hardware.json
-
-# Backup files
-*.bak
-*.backup
-*.old
-*.orig
-
-# -----------------------------------------------------------------------------
-# Security / Sensitive Data
-# -----------------------------------------------------------------------------
-# API keys and secrets
-*.key
-*.pem
-*.p12
-secrets/
-.secrets/
-
-# Certificate files
-*.crt
-*.cert
-*.ca-bundle
-
-# Database files
-*.db
-*.sqlite
-*.sqlite3
-
-# -----------------------------------------------------------------------------
-# Documentation / Generated Files
-# -----------------------------------------------------------------------------
-# Auto-generated docs
-docs/build/
-docs/_build/
-*.doctree
-
-# Generated assets
-assets/generated/
-public/generated/
-
-# -----------------------------------------------------------------------------
-# Deployment / CI/CD
-# -----------------------------------------------------------------------------
-.vercel
-.netlify
-.firebase/
-.github/workflows/*.env
-
-# Terraform
-*.tfstate
-*.tfstate.*
-.terraform/
-.terraform.lock.hcl
-
-# Docker
-.dockerignore
-Dockerfile.prod
-docker-compose.override.yml
-
-# Kubernetes
-*.yaml.local
-*.yml.local
-
-# -----------------------------------------------------------------------------
-# Monitoring / Analytics
-# -----------------------------------------------------------------------------
-# Analytics
-.analytics/
-analytics.json
-
-# Performance monitoring
-.perf/
-performance.json
-
-# Error tracking
-.sentry/
-sentry.properties
-
-# -----------------------------------------------------------------------------
-# Development Tools
-# -----------------------------------------------------------------------------
-# Webpack
-.webpack/
-
-# Babel
-.babel-cache/
-
-# TypeScript
-*.tsbuildinfo
-
-# ESLint
-.eslintcache
-
-# Prettier
-.prettiercache
-
-# Stylelint
-.stylelintcache
-
-# PostCSS
-.postcssrc.js
-
-# Tailwind
-tailwind.config.local.js
-
-# -----------------------------------------------------------------------------
 # Misc
-# -----------------------------------------------------------------------------
-# macOS metadata
-.fseventsd
-.Spotlight-V100
-.TemporaryItems
-.Trashes
-.VolumeIcon.icns
-.com.apple.timemachine.donotpresent
+*.zip
 
-# Network folders
-Network Trash Folder
-Temporary Items
-.apdisk
-
-# Thumbnails
-._*
-
-# Files that might appear in the root of a volume
-.DocumentRevisions-V100
-.fseventsd
-.Spotlight-V100
-.TemporaryItems
-.Trashes
-.VolumeIcon.icns
-.com.apple.timemachine.donotpresent
-
-# =============================================================================
-# End of .gitignore
-# =============================================================================
