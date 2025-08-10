@@ -71,7 +71,7 @@ body {
 	-webkit-background-clip: text;
 	background-clip: text;
 	color: transparent;
-	animation: shimmer 1.5s linear infinite;
+	animation: shimmer 3s linear infinite;
 }
 
 [data-theme="light"] .text-shimmer {

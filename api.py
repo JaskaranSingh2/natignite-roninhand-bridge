@@ -226,7 +226,7 @@ class GestureHandler(http.server.SimpleHTTPRequestHandler):
 import http.server
 import socketserver
 
-PORT = 7000  # Or any port you want
+PORT = 7001  # Or any port you want
 
 with socketserver.TCPServer(("", PORT), GestureHandler) as httpd:
     print(f"Server running at http://localhost:{PORT}")

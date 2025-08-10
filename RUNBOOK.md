@@ -1,323 +1,310 @@
 # NatIgnite RoninHand Bridge - Runbook
 
-This runbook provides step-by-step instructions for running all components of the NatIgnite RoninHand Bridge system.
+This document provides step-by-step instructions to run the complete system.
 
-## Overview
+## System Overview
 
 The system consists of:
 
-- **API Server** (`api.py`) - Core signal processing server
-- **Frontend** (Next.js) - Web UI for managing signals and actions
-- **Gateway** (FastAPI) - Optional UI-friendly API layer with overlay persistence
-- **RoninHand Server** - Physical robot control server
+- **API Server** (`api.py`) - Main data server providing signals and mappings
+- **Frontend** (Next.js) - Web interface for managing signals and state mappings
+- **RoninHand Server** (external) - Robot hand control server
 
-## Prerequisites
+## Data Format
 
-- Python 3.8+ with pip
-- Node.js 18+ with npm
-- Git
+### signals.json
 
-## 1. API Server (Core)
+```json
+{
+	"bite": ["clenched", "open"],
+	"EMG": ["up", "down"]
+}
+```
 
-The main signal processing server that handles signal definitions and mapping.
+### mapping.json
 
-### Setup & Run
+```json
+{
+	"['clenched', 'up']": ["hello", "mate"],
+	"['clenched', 'down']": null,
+	"['open', 'up']": null,
+	"['open', 'down']": null
+}
+```
+
+## 1. API Server (api.py)
+
+The main API server provides data endpoints and handles signal/mapping updates.
+
+### Start Command
 
 ```bash
-# From project root
 python3 api.py
 ```
 
-**Port:** 7000  
-**Endpoints:**
+### Server Details
+
+- **Port**: 7001
+- **Base URL**: <http://localhost:7001>
+
+### Available Endpoints
+
+#### GET Endpoints
 
 - `GET /` - Health check
-- `GET /signals` - Get all signals from signals.json
-- `GET /mapping` - Get signal mappings from mapping.json
-- `POST /add_signal` - Add new signal
-- `POST /remove_signal` - Remove signal
-- `POST /add_mapping` - Add signal mapping
-- `POST /receive_signals` - Receive signal values for processing
+- `GET /signals` - Get current signals configuration
+- `GET /mapping` - Get current state mappings
 
-**Files:**
+#### POST Endpoints
 
-- Reads: `signals.json`, `mapping.json`
-- Writes: `signals.json`, `mapping.json` (base files)
+- `POST /add_signal` - Add a new signal with states
 
-## 2. Gateway (FastAPI) - Optional
+  ```json
+  {
+  	"signal": "bite",
+  	"signal_types": ["clenched", "open"]
+  }
+  ```
 
-UI-friendly API layer that implements overlay persistence model (base + overlay).
+- `POST /remove_signal` - Remove a signal
 
-### Setup
+  ```json
+  {
+  	"signal": "bite"
+  }
+  ```
 
-```bash
-# Create virtual environment
-python3 -m venv gateway-env
-source gateway-env/bin/activate  # On Windows: gateway-env\Scripts\activate
+- `POST /add_mapping` - Add/update state combination mapping
 
-# Install dependencies
-pip install -r gateway/requirements.txt
-```
+  ```json
+  {
+  	"signal": "['clenched', 'up']",
+  	"mapsto": ["hello", "mate"]
+  }
+  ```
 
-### Run
+- `POST /receive_signals` - Receive live signal data
 
-```bash
-# From project root, with venv activated
-uvicorn gateway.app:app --reload --port 9100
-```
+  ```json
+  {
+  	"signal": "bite",
+  	"value": "clenched"
+  }
+  ```
 
-**Port:** 9100  
-**Base URL:** <http://127.0.0.1:9100>
+### File Dependencies
 
-### Environment Variables (Optional)
+- Reads/writes: `signals.json`, `mapping.json`
+- Auto-generates mapping combinations when signals are modified
 
-```bash
-export BASE_SIGNALS_PATH=signals.json
-export OVERLAY_SIGNALS_PATH=signals.local.json
-export BASE_MAPPING_PATH=mapping.json
-export OVERLAY_MAPPING_PATH=mapping.local.json
-```
+## 2. Frontend (Next.js)
 
-**Endpoints:**
+Web interface for managing signals and state mappings.
 
-- `GET /health` - Health check
-- `GET /ui/signals` - Get merged signals (base + overlay)
-- `POST /ui/signals` - Create signal in overlay
-- `DELETE /ui/signals/{name}` - Delete signal (tombstone in overlay)
-- `GET /ui/signals/{name}` - Get specific signal
-- `PUT /ui/signals/{name}/actions` - Update signal actions
-- `GET /ui/mapping` - Get full mapping
-- `PUT /ui/mapping` - Update mapping
-
-**Files:**
-
-- Reads: `signals.json`, `mapping.json`, `signals.local.json`, `mapping.local.json`
-- Writes: `signals.local.json`, `mapping.local.json` (overlay files only)
-
-## 3. Frontend (Next.js)
-
-Web interface for managing signals and actions with accessibility features.
-
-### Setup
+### Setup & Start
 
 ```bash
 cd frontend
 npm install
-```
 
-### Configuration
+# Create environment file
+echo "NEXT_PUBLIC_API_URL=http://127.0.0.1:7002" > .env.local
 
-Create `frontend/.env.local`:
+# Start CORS proxy (required due to api.py CORS header duplication)
+npm run proxy
 
-```bash
-# Point to Gateway (recommended) or API directly
-NEXT_PUBLIC_API_URL=http://127.0.0.1:9100
-
-# Alternative: Point to API directly (read-only mode)
-# NEXT_PUBLIC_API_URL=http://127.0.0.1:7000
-```
-
-### Run
-
-```bash
-# From frontend directory
+# In another terminal, start development server
 npm run dev
 ```
 
-**Port:** 3000  
-**URL:** <http://localhost:3000/signals>
+### Frontend Details
+
+- **Port**: 3000
+- **URL**: <http://localhost:3000>
+- **Main Route**: <http://localhost:3000/signals>
+- **CORS Proxy Port**: 7002
+
+### Environment Variables
+
+```bash
+# frontend/.env.local
+NEXT_PUBLIC_API_URL=http://127.0.0.1:7002
+```
+
+### CORS Proxy
+
+Due to duplicate CORS headers in api.py (which cannot be modified), a proxy server is required:
+
+- **Purpose**: Removes duplicate CORS headers and sets clean ones
+- **Port**: 7002
+- **Target**: api.py at port 7001
+- **Command**: `npm run proxy` (must run before frontend)
 
 ### Features
 
-- Dark/light theme toggle (defaults to dark)
-- Accessibility tested with jest-axe
-- Signal and action management
-- Focus management for keyboard navigation
-- Responsive design
+- View and manage signals with their states
+- Create state combinations and assign actions
+- Rainbow border animations and accessible UI
+- Save disclaimer warnings
 
-### Testing
+## 3. RoninHand Server
 
-```bash
-# Run accessibility tests
-npm test
-```
+External robot hand control server (not in this repository).
 
-## 4. RoninHand Server
-
-Physical robot control server that executes gestures and servo movements.
-
-### Location
-
-The RoninHand server is typically located in a separate repository or directory. Look for:
-
-- `server.py` using `scservo_sdk`
-- Usually runs on port 8000
-
-### Setup & Run
+### Expected Setup
 
 ```bash
-# Install dependencies (in robot server directory)
+# Navigate to RoninHand server directory
+cd /path/to/roninhand-server
+
+# Create virtual environment
+python3 -m venv venv
+source venv/bin/activate
+
+# Install dependencies
 pip install scservo_sdk requests
 
 # Run server
 python3 server.py
 ```
 
-**Port:** 8000 (default)  
-**Endpoints:**
+### Server Details
+
+- **Expected Port**: 8000
+- **Base URL**: <http://localhost:8000>
+- **Dependencies**: scservo_sdk for servo control
+
+### Expected Endpoints
 
 - `GET /current_positions` - Get current servo positions
 - `POST /update` - Update servo positions
-- `POST /execute` - Execute gesture
+- `POST /execute` - Execute gesture commands
 
-## 5. Running the Complete System
+## 4. Example Curl Commands
 
-### Recommended Startup Order
+### Read Current State
 
-1. **Start RoninHand Server** (if available)
+```bash
+# Get signals
+curl http://127.0.0.1:7001/signals
 
-   ```bash
-   # In robot server directory
-   python3 server.py
-   ```
+# Get mappings
+curl http://127.0.0.1:7001/mapping
+```
 
-2. **Start API Server**
+### Create Signal
+
+```bash
+curl -X POST http://127.0.0.1:7001/add_signal \
+  -H "Content-Type: application/json" \
+  -d '{
+    "signal": "EMG",
+    "signal_types": ["up", "down"]
+  }'
+```
+
+### Set Mapping
+
+```bash
+curl -X POST http://127.0.0.1:7001/add_mapping \
+  -H "Content-Type: application/json" \
+  -d '{
+    "signal": "[\"clenched\", \"up\"]",
+    "mapsto": ["hello", "mate"]
+  }'
+```
+
+## 5. End-to-End Verification
+
+### Quick Setup Verification
+
+1. **Start API Server**:
 
    ```bash
    python3 api.py
+   # Should show: Server running at http://localhost:7001
    ```
 
-3. **Start Gateway** (recommended for UI)
+2. **Verify API Endpoints**:
 
    ```bash
-   source gateway-env/bin/activate
-   uvicorn gateway.app:app --reload --port 9100
+   curl http://127.0.0.1:7001/signals
+   curl http://127.0.0.1:7001/mapping
    ```
 
-4. **Start Frontend**
+3. **Install Frontend Dependencies**:
 
    ```bash
-   cd frontend
-   npm run dev
+   cd frontend && npm install
+   # This installs express and http-proxy-middleware for the CORS proxy
    ```
 
-### Access Points
+4. **Start CORS Proxy**:
 
-- **Web UI:** <http://localhost:3000/signals>
-- **Gateway API:** <http://127.0.0.1:9100>
-- **Core API:** <http://127.0.0.1:7000>
-- **Robot API:** <http://127.0.0.1:8000>
+   ```bash
+   cd frontend && npm run proxy
+   # Should show: CORS Proxy running on http://localhost:7002
+   # Proxying requests to api.py at http://127.0.0.1:7001
+   ```
 
-## 6. File Persistence Model
+5. **Start Frontend** (in another terminal):
 
-### Base Files (Read-Only in Production)
+   ```bash
+   cd frontend && npm run dev
+   # Should show: ready - started server on http://localhost:3000
+   ```
 
-- `signals.json` - Base signal definitions
-- `mapping.json` - Base signal mappings
+6. **Test Frontend**:
+   - Visit <http://localhost:3000/signals>
+   - Should see current signals and be able to add new ones
 
-### Overlay Files (User Changes)
+### Complete Workflow Test
 
-- `signals.local.json` - User signal modifications
-- `mapping.local.json` - User mapping modifications
+1. **Create test signals** (bite with clenched/open, EMG with up/down)
+2. **Set mapping** for ['clenched', 'up'] → ["hello","mate"]
+3. **Verify data persistence** by refreshing and checking JSON files
+4. **Test API responses** match the target format exactly
 
-### Merge Logic
-
-- Overlay values override base values
-- `null` in overlay = delete/tombstone
-- Gateway handles merging automatically
-- API server only works with base files
-
-## 7. E2E Smoke Test (Optional)
-
-Quick verification that the system is working:
+### Data Verification
 
 ```bash
-# Test Gateway endpoints
-curl http://127.0.0.1:9100/health
-curl http://127.0.0.1:9100/ui/signals
+# Download current state
+curl http://127.0.0.1:7001/signals > current_signals.json
+curl http://127.0.0.1:7001/mapping > current_mapping.json
 
-# Test signal creation
-curl -X POST http://127.0.0.1:9100/ui/signals \
-  -H "Content-Type: application/json" \
-  -d '{"name": "test_signal", "actions": ["test_action"]}'
-
-# Test signal retrieval
-curl http://127.0.0.1:9100/ui/signals/test_signal
+# Compare with expected format
+diff signals.json current_signals.json
+diff mapping.json current_mapping.json
 ```
 
-## 8. Troubleshooting
+## 6. Troubleshooting
 
 ### Common Issues
 
-**Port Conflicts**
+- **Port conflicts**: API server uses 7001, frontend uses 3000
+- **CORS errors**: API server includes CORS headers for localhost:3000
+- **Missing dependencies**: Install Node.js, Python 3, and required packages
+- **File permissions**: Ensure API server can read/write JSON files
 
-- API: Change port in `api.py` (default 7000)
-- Gateway: Use `--port` flag with uvicorn
-- Frontend: Use `npm run dev -- --port 3001`
+### Development Notes
 
-**CORS Issues**
+- API server auto-regenerates mapping.json when signals change
+- Frontend validates input and shows errors for missing data
+- All endpoints return JSON with appropriate HTTP status codes
+- Save operations are atomic to prevent data corruption
 
-- Ensure Gateway CORS allows frontend origin
-- Check NEXT_PUBLIC_API_URL matches Gateway URL
+## 7. Architecture Notes
 
-**Missing Dependencies**
+### Data Flow
 
-```bash
-# Frontend
-cd frontend && npm install
+1. Frontend creates signals via API → signals.json updated
+2. API auto-generates all possible state combinations → mapping.json updated
+3. Frontend allows editing individual state combinations
+4. Live signals trigger actions via mapping lookup
 
-# Gateway
-pip install -r gateway/requirements.txt
+### Key Features
 
-# Robot server
-pip install scservo_sdk requests
-```
-
-**File Permissions**
-
-- Ensure write permissions for overlay files
-- Check that `signals.json` and `mapping.json` exist
-
-### Logs
-
-- Frontend: Browser developer console
-- Gateway: Terminal output with `--reload`
-- API: Terminal output
-- Robot: Check server.py output
-
-## 9. Development Notes
-
-### Frontend Development
-
-- Uses Next.js 14 App Router
-- Tailwind CSS for styling
-- TypeScript throughout
-- Jest + Testing Library for testing
-
-### API Development
-
-- Gateway uses FastAPI with Pydantic validation
-- Core API uses basic http.server
-- Overlay model prevents base file corruption
-
-### Accessibility
-
-- WCAG AA compliant
-- Screen reader tested
-- Keyboard navigation
-- Color contrast verified
-
-## 10. Production Deployment
-
-For production deployment:
-
-1. Build frontend: `npm run build`
-2. Use production WSGI server for Gateway
-3. Configure reverse proxy (nginx/Apache)
-4. Set appropriate environment variables
-5. Ensure file permissions for overlay writes
-6. Monitor logs and health endpoints
-
----
-
-_Last updated: August 2025_
+- **No overlay files**: All data goes directly through api.py endpoints
+- **Exact formatting**: Combo keys use single quotes with space after comma
+- **Validation**: Client and server validate signal/state names are non-empty
+- **Atomic updates**: Temporary files used during writes, then renamed

@@ -1,3 +1,10 @@
 {
-"bite":["open","touch","clench"]
+    "Test1": [
+        "Clenched",
+        "opened"
+    ],
+    "Test2": [
+        "Up",
+        "Down"
+    ]
 }

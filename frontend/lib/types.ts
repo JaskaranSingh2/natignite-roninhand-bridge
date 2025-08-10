@@ -1,20 +1,12 @@
-import { z } from 'zod'
+import { z } from "zod";
 
-export const ActionSchema = z.object({
-  name: z.string().min(1),
-  bit: z.number().int().nonnegative().nullable().optional(),
-})
+// New schemas for the updated data format
+export const SignalsZ = z.record(z.array(z.string())); // { [signal]: string[] }
+export const MappingZ = z.record(z.union([z.array(z.string()), z.null()])); // { "['s1','s2']": string[] | null }
 
-export const SignalSchema = z.object({
-  name: z.string().min(1),
-  actions: z.array(ActionSchema),
-})
+export type Signals = z.infer<typeof SignalsZ>;
+export type Mapping = z.infer<typeof MappingZ>;
 
-export const SignalsResponseSchema = z.object({
-  signals: z.array(SignalSchema),
-})
-
-export type Action = z.infer<typeof ActionSchema>
-export type Signal = z.infer<typeof SignalSchema>
-export type SignalsResponse = z.infer<typeof SignalsResponseSchema>
-
+// Utility function to build combo keys with exact formatting
+export const comboKey = (states: [string, string]) =>
+	`['${states[0]}', '${states[1]}']`;
