@@ -200,8 +200,9 @@ class GestureHandler(http.server.SimpleHTTPRequestHandler):
                 for i in data:
                     signal_received[i]=None
                     old_signal_received_time[i]=100
-            signal_received[signal]=value
-            signal_received_time[signal]=time.time()
+            for i in range(0,len(signal)):
+                signal_received[signal[i]]=value[i]
+                signal_received_time[signal[i]]=time.time()
             proceed=True
             for key, value in signal_received.items():
                 if value==None:
