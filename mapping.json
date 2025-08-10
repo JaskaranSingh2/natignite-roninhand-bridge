@@ -1,6 +1,10 @@
 {
-    "['Clenched', 'Up', 'BBB']": null,
-    "['Clenched', 'Down', 'BBB']": null,
-    "['opened', 'Up', 'BBB']": null,
-    "['opened', 'Down', 'BBB']": null
+    "['Clenched', 'Up', 'BBB', 'dasasa']": null,
+    "['Clenched', 'Up', 'BBB', 'aada']": null,
+    "['Clenched', 'Down', 'BBB', 'dasasa']": null,
+    "['Clenched', 'Down', 'BBB', 'aada']": null,
+    "['opened', 'Up', 'BBB', 'dasasa']": null,
+    "['opened', 'Up', 'BBB', 'aada']": null,
+    "['opened', 'Down', 'BBB', 'dasasa']": null,
+    "['opened', 'Down', 'BBB', 'aada']": null
 }
