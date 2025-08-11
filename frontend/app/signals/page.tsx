@@ -59,10 +59,7 @@ export default function SignalsPage() {
 			<div className="rainbow-border">
 				<div className="bg-card border border-border rounded-xl shadow-card p-4 sm:p-6">
 					<div className="flex items-center justify-between mb-4">
-						<h1
-							className="text-xl font-semibold text-shimmer"
-							id="signals-heading"
-						>
+						<h1 className="text-xl font-semibold" id="signals-heading">
 							Signals
 						</h1>
 						<button
@@ -214,7 +211,7 @@ export default function SignalsPage() {
 
 					{/* Save disclaimer */}
 					<div
-						className="bg-yellow-500/10 border border-yellow-500/30 rounded-md p-3 text-yellow-200 text-sm mt-4"
+						className="bg-yellow-500/10 border border-yellow-500/30 rounded-md p-3 text-orange-500 text-sm mt-4"
 						role="note"
 					>
 						<strong>⚠️ Note:</strong> Once actions are saved, this signal
